@@ -15,8 +15,10 @@ import {
 } from "lucide-react";
 import { useI18n, useT } from "@/lib/i18n";
 import { useRole } from "@/lib/role-context";
+import { useUI } from "@/lib/ui-context";
 import { ROLE_ORDER, ROLES, type RoleId } from "@/lib/roles";
 import { DEMO_LOGIN } from "@/data/mock";
+import { Film } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +32,7 @@ export default function LoginPage() {
   const t = useT();
   const { lang } = useI18n();
   const { setRole } = useRole();
+  const { startTrailer } = useUI();
 
   const [mode, setMode] = useState<Mode>("signin");
   const [selectedRole, setSelectedRole] = useState<RoleId>("student");
@@ -37,6 +40,12 @@ export default function LoginPage() {
   function enterDemo(e?: FormEvent) {
     e?.preventDefault();
     if (mode === "signup") setRole(selectedRole);
+    router.push("/dashboard");
+  }
+
+  function launchTrailer() {
+    setRole("student");
+    startTrailer();
     router.push("/dashboard");
   }
 
@@ -227,6 +236,27 @@ export default function LoginPage() {
               <GoogleGlyph />
               {t.login.google}
             </Button>
+
+            <div className="mt-5 border-t border-hairline pt-5">
+              <button
+                type="button"
+                onClick={launchTrailer}
+                className="group flex w-full items-center justify-center gap-2 rounded-xl border border-accent-500/35 bg-accent-500/[0.07] px-4 py-3 text-sm font-extrabold text-gold-ink transition hover:border-accent-500/65 hover:bg-accent-500/12"
+              >
+                <Film className="size-4" />
+                {lang === "es"
+                  ? "Ver demo automática de la plataforma"
+                  : "Watch the auto-play demo"}
+                <span className="rounded-full bg-accent-500/15 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-gold-ink">
+                  90s
+                </span>
+              </button>
+              <p className="mt-2 text-center text-[11px] text-content-muted">
+                {lang === "es"
+                  ? "Sin registro · loop infinito · ideal para compartir"
+                  : "No signup · infinite loop · perfect to share"}
+              </p>
+            </div>
 
             <p className="mt-6 text-center text-sm text-content-muted">
               {mode === "signin" ? t.login.noAccount : t.login.haveAccount}{" "}

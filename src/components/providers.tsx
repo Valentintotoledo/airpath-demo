@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { LanguageProvider } from "@/lib/i18n";
 import { RoleProvider } from "@/lib/role-context";
 import { UIProvider } from "@/lib/ui-context";
+import { Trailer } from "@/components/trailer/trailer";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -16,7 +17,10 @@ export function Providers({ children }: { children: ReactNode }) {
     >
       <LanguageProvider>
         <RoleProvider>
-          <UIProvider>{children}</UIProvider>
+          <UIProvider>
+            {children}
+            <Trailer />
+          </UIProvider>
         </RoleProvider>
       </LanguageProvider>
     </ThemeProvider>

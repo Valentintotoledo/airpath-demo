@@ -6,6 +6,7 @@ import { Topbar } from "./topbar";
 import { BottomNav } from "./bottom-nav";
 import { Assistant } from "@/components/assistant/assistant";
 import { Tour } from "@/components/tour/tour";
+import { useUI } from "@/lib/ui-context";
 
 function ShellBackdrop() {
   return (
@@ -18,6 +19,7 @@ function ShellBackdrop() {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const { trailerMode } = useUI();
   return (
     <div className="relative min-h-dvh">
       <ShellBackdrop />
@@ -29,8 +31,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </main>
       </div>
       <BottomNav />
-      <Assistant />
-      <Tour />
+      {!trailerMode && <Assistant />}
+      {!trailerMode && <Tour />}
     </div>
   );
 }
