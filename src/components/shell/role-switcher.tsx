@@ -26,6 +26,7 @@ export function RoleSwitcher() {
     <>
       <button
         type="button"
+        data-tour="role-switcher"
         onClick={() => setOpen(true)}
         className="inline-flex h-10 shrink-0 items-center gap-2 rounded-xl border border-hairline bg-surface px-2 pr-2.5 text-sm font-semibold text-content transition hover:border-primary-500/45 sm:px-2.5"
       >

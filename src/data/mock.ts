@@ -165,6 +165,12 @@ export const CAREER_STAGES: CareerStage[] = [
   },
 ];
 
+/** Demo login pre-filled for the prospect. Any input also works. */
+export const DEMO_LOGIN = {
+  email: "juancamilo@airpath.demo",
+  password: "AirPath2025",
+};
+
 export function getDemoUser(role: RoleId): DemoUser {
   return DEMO_USERS[role];
 }

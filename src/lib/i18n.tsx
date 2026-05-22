@@ -69,3 +69,14 @@ export function useT(): Dict {
 export function pick<T>(lang: Lang, pair: { es: T; en: T }): T {
   return pair[lang];
 }
+
+/**
+ * Returns a translate function bound to the active language.
+ * Use for page-local bilingual text: tr({ es: "Hola", en: "Hi" }).
+ */
+export function useTr() {
+  const { lang } = useI18n();
+  return function tr<T>(pair: { es: T; en: T }): T {
+    return pair[lang];
+  };
+}

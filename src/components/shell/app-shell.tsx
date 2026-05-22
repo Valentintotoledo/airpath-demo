@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 import { BottomNav } from "./bottom-nav";
+import { Assistant } from "@/components/assistant/assistant";
+import { Tour } from "@/components/tour/tour";
 
 function ShellBackdrop() {
   return (
@@ -27,6 +29,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </main>
       </div>
       <BottomNav />
+      <Assistant />
+      <Tour />
     </div>
   );
 }

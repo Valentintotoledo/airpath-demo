@@ -10,11 +10,13 @@ import {
   Lock,
   Route,
   ShieldCheck,
+  Sparkles,
   User as UserIcon,
 } from "lucide-react";
 import { useI18n, useT } from "@/lib/i18n";
 import { useRole } from "@/lib/role-context";
 import { ROLE_ORDER, ROLES, type RoleId } from "@/lib/roles";
+import { DEMO_LOGIN } from "@/data/mock";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -121,7 +123,29 @@ export default function LoginPage() {
               {mode === "signin" ? t.login.signInSub : t.login.signUpSub}
             </p>
 
-            <form className="mt-6 space-y-4" onSubmit={enterDemo}>
+            {mode === "signin" && (
+              <div className="mt-5 rounded-xl border border-primary-500/25 bg-primary-600/[0.08] p-3.5">
+                <p className="flex items-center gap-1.5 text-xs font-bold text-purple-ink">
+                  <Sparkles className="size-3.5" />
+                  {t.login.demoAccess}
+                </p>
+                <div className="mt-2 grid gap-1 text-xs text-content-muted">
+                  <span>
+                    {t.login.email}:{" "}
+                    <span className="font-semibold text-content">{DEMO_LOGIN.email}</span>
+                  </span>
+                  <span>
+                    {t.login.password}:{" "}
+                    <span className="font-semibold text-content">{DEMO_LOGIN.password}</span>
+                  </span>
+                </div>
+                <p className="mt-2 text-[11px] leading-relaxed text-content-muted/80">
+                  {t.login.demoAccessNote}
+                </p>
+              </div>
+            )}
+
+            <form className="mt-5 space-y-4" onSubmit={enterDemo}>
               {mode === "signup" && (
                 <Input
                   label={t.login.name}
@@ -131,18 +155,22 @@ export default function LoginPage() {
                 />
               )}
               <Input
+                key={`email-${mode}`}
                 label={t.login.email}
                 type="email"
                 placeholder={t.login.emailPlaceholder}
                 icon={Mail}
                 autoComplete="email"
+                defaultValue={mode === "signin" ? DEMO_LOGIN.email : undefined}
               />
               <Input
+                key={`password-${mode}`}
                 label={t.login.password}
                 type="password"
                 placeholder={t.login.passwordPlaceholder}
                 icon={Lock}
                 autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                defaultValue={mode === "signin" ? DEMO_LOGIN.password : undefined}
               />
 
               {mode === "signup" && (

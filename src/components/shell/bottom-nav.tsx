@@ -33,6 +33,7 @@ export function BottomNav() {
             <Link
               key={item.key}
               href={item.href}
+              data-tour={`nav-${item.key}`}
               className={cn(
                 "flex h-[60px] flex-col items-center justify-center gap-1 px-1 transition",
                 active ? "text-purple-ink" : "text-content-muted",

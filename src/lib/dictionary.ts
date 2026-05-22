@@ -120,6 +120,8 @@ export const es = {
     haveAccount: "¿Ya tenés cuenta?",
     enterDemo: "Explorar la demo",
     terms: "Al continuar aceptás los Términos y la Política de Privacidad.",
+    demoAccess: "Acceso de demostración",
+    demoAccessNote: "Credenciales cargadas para Juan Camilo — o entrá con cualquier dato.",
   },
   home: {
     hello: "Hola",
@@ -255,6 +257,8 @@ export const en: Dict = {
     haveAccount: "Already have an account?",
     enterDemo: "Explore the demo",
     terms: "By continuing you accept the Terms and Privacy Policy.",
+    demoAccess: "Demo access",
+    demoAccessNote: "Credentials pre-filled for Juan Camilo — or enter with any data.",
   },
   home: {
     hello: "Hi",

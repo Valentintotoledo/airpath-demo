@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Compass } from "lucide-react";
 import { useT } from "@/lib/i18n";
+import { useUI } from "@/lib/ui-context";
 import { NAV_ITEMS } from "@/lib/roles";
 import { Logo } from "@/components/brand/logo";
 import { LanguageToggle } from "./language-toggle";
@@ -13,6 +15,7 @@ import { DemoCta } from "./demo-cta";
 export function Topbar() {
   const pathname = usePathname();
   const t = useT();
+  const { startTour } = useUI();
 
   const item = Object.values(NAV_ITEMS).find(
     (i) => i.href && (pathname === i.href || pathname.startsWith(`${i.href}/`)),
@@ -37,6 +40,14 @@ export function Topbar() {
 
       <div className="ml-auto flex items-center gap-2">
         <DemoCta variant="pill" className="lg:hidden" />
+        <button
+          type="button"
+          onClick={startTour}
+          className="hidden h-10 items-center gap-1.5 rounded-xl border border-hairline bg-surface px-3 text-sm font-semibold text-content-muted transition hover:border-primary-500/45 hover:text-content sm:inline-flex"
+        >
+          <Compass className="size-4" />
+          <span className="hidden lg:inline">Tour</span>
+        </button>
         <LanguageToggle />
         <ThemeToggle />
         <RoleSwitcher />
