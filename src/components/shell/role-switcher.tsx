@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Check, ChevronDown } from "lucide-react";
 import { useRole } from "@/lib/role-context";
 import { useT } from "@/lib/i18n";
@@ -11,6 +12,7 @@ import { cn } from "@/lib/cn";
 export function RoleSwitcher() {
   const { roleId, role, setRole } = useRole();
   const t = useT();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const RoleIcon = role.icon;
 
@@ -20,6 +22,8 @@ export function RoleSwitcher() {
   function choose(id: RoleId) {
     setRole(id);
     setOpen(false);
+    // Always land on each role's "Inicio" after switching.
+    router.push("/dashboard");
   }
 
   return (

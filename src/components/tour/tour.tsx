@@ -1,13 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowLeft, ArrowRight, Check, MapPin, X } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useUI } from "@/lib/ui-context";
+import { useRole } from "@/lib/role-context";
 import type { L10n } from "@/data/mock";
 
-const TOUR_KEY = "airpath.tourSeen";
+// Per-session flag: tour auto-starts on each fresh browser session
+// so every demo visit naturally re-introduces the platform.
+const SESSION_KEY = "airpath.tourSeenSession";
 
 type TourStep = { target: string | null; title: L10n; body: L10n };
 
@@ -81,19 +85,28 @@ const STEPS: TourStep[] = [
 export function Tour() {
   const { tourOpen, startTour, endTour } = useUI();
   const { lang } = useI18n();
+  const { roleId, setRole } = useRole();
+  const router = useRouter();
+  const pathname = usePathname();
   const [step, setStep] = useState(0);
   const [rect, setRect] = useState<DOMRect | null>(null);
 
-  // Auto-start on first ever visit.
+  // Auto-start once per browser session.
   useEffect(() => {
-    if (!window.localStorage.getItem(TOUR_KEY)) {
-      const id = window.setTimeout(() => startTour(), 700);
+    if (!window.sessionStorage.getItem(SESSION_KEY)) {
+      const id = window.setTimeout(() => startTour(), 800);
       return () => window.clearTimeout(id);
     }
   }, [startTour]);
 
+  // When the tour opens, force the student view + go to /dashboard so every
+  // step has its target element on screen.
   useEffect(() => {
-    if (tourOpen) setStep(0);
+    if (!tourOpen) return;
+    setStep(0);
+    if (roleId !== "student") setRole("student");
+    if (pathname !== "/dashboard") router.push("/dashboard");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tourOpen]);
 
   const measure = useCallback(() => {
@@ -102,16 +115,24 @@ export function Tour() {
       setRect(null);
       return;
     }
-    let found: Element | null = null;
-    document.querySelectorAll(sel).forEach((el) => {
-      if (!found && el.getBoundingClientRect().width > 0) found = el;
-    });
-    if (found) {
-      (found as Element).scrollIntoView({ block: "center", behavior: "smooth" });
-      window.setTimeout(() => setRect((found as Element).getBoundingClientRect()), 280);
-    } else {
-      setRect(null);
-    }
+    let attempts = 0;
+    const tryMeasure = () => {
+      let found: Element | null = null;
+      document.querySelectorAll(sel).forEach((el) => {
+        if (!found && el.getBoundingClientRect().width > 0) found = el;
+      });
+      if (found) {
+        (found as Element).scrollIntoView({ block: "center", behavior: "smooth" });
+        window.setTimeout(() => {
+          if (found) setRect((found as Element).getBoundingClientRect());
+        }, 280);
+      } else if (++attempts < 12) {
+        window.setTimeout(tryMeasure, 180);
+      } else {
+        setRect(null);
+      }
+    };
+    tryMeasure();
   }, [step]);
 
   useEffect(() => {
@@ -126,7 +147,7 @@ export function Tour() {
   }, [tourOpen, step, measure]);
 
   function finish() {
-    window.localStorage.setItem(TOUR_KEY, "1");
+    window.sessionStorage.setItem(SESSION_KEY, "1");
     endTour();
   }
 

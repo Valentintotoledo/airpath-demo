@@ -36,16 +36,48 @@ export function Assistant() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, typing]);
 
-  function send(text: string) {
+  async function send(text: string) {
     const value = text.trim();
     if (!value || typing) return;
-    setMessages((m) => [...m, { id: uid(), role: "user", text: value }]);
+    const userMsg: Msg = { id: uid(), role: "user", text: value };
+    const next = [...messages, userMsg];
+    setMessages(next);
     setInput("");
     setTyping(true);
-    window.setTimeout(() => {
-      setMessages((m) => [...m, { id: uid(), role: "assistant", reply: getReply(value, lang) }]);
+
+    // Build API messages from conversation so far + the new user turn.
+    const apiMessages = next
+      .map((m) => {
+        if (m.role === "user") return { role: "user" as const, content: m.text };
+        const r = m.reply;
+        const body = [r.text, ...(r.bullets ?? []).map((b) => `• ${b}`)].join("\n");
+        return { role: "assistant" as const, content: body };
+      })
+      .filter((m) => m.content && m.content.trim().length > 0);
+
+    try {
+      const res = await fetch("/api/assistant", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ messages: apiMessages, lang }),
+      });
+      if (!res.ok) throw new Error(`api_${res.status}`);
+      const data = (await res.json()) as { text?: string };
+      const replyText = (data.text ?? "").trim();
+      if (!replyText) throw new Error("empty");
+      setMessages((m) => [
+        ...m,
+        { id: uid(), role: "assistant", reply: { text: replyText } },
+      ]);
+    } catch {
+      // Fallback to keyword reply when the API is unavailable.
+      setMessages((m) => [
+        ...m,
+        { id: uid(), role: "assistant", reply: getReply(value, lang) },
+      ]);
+    } finally {
       setTyping(false);
-    }, 850);
+    }
   }
 
   const hasUserMsg = messages.some((m) => m.role === "user");
