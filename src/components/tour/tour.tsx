@@ -83,7 +83,7 @@ const STEPS: TourStep[] = [
 ];
 
 export function Tour() {
-  const { tourOpen, startTour, endTour } = useUI();
+  const { tourOpen, endTour } = useUI();
   const { lang } = useI18n();
   const { roleId, setRole } = useRole();
   const router = useRouter();
@@ -91,13 +91,8 @@ export function Tour() {
   const [step, setStep] = useState(0);
   const [rect, setRect] = useState<DOMRect | null>(null);
 
-  // Auto-start once per browser session.
-  useEffect(() => {
-    if (!window.sessionStorage.getItem(SESSION_KEY)) {
-      const id = window.setTimeout(() => startTour(), 800);
-      return () => window.clearTimeout(id);
-    }
-  }, [startTour]);
+  // The first-visit auto-start is now triggered from WelcomeGate after the
+  // user picks "Explore on my own", so we don't auto-start here anymore.
 
   // When the tour opens, force the student view + go to /dashboard so every
   // step has its target element on screen.

@@ -6,6 +6,7 @@ import { Topbar } from "./topbar";
 import { BottomNav } from "./bottom-nav";
 import { Assistant } from "@/components/assistant/assistant";
 import { Tour } from "@/components/tour/tour";
+import { WelcomeGate } from "@/components/trailer/welcome-gate";
 import { useUI } from "@/lib/ui-context";
 
 function ShellBackdrop() {
@@ -33,6 +34,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <BottomNav />
       {!trailerMode && <Assistant />}
       {!trailerMode && <Tour />}
+      <WelcomeGate />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { Pause, Play, RotateCcw, SkipForward, X } from "lucide-react";
+import { ChevronRight, Pause, Play, RotateCcw, X } from "lucide-react";
 import { useUI } from "@/lib/ui-context";
 import { cn } from "@/lib/cn";
 
@@ -292,19 +292,30 @@ export function Trailer() {
     router.push("/login");
   }
 
+  const progressPct = ((i + 1) / SCENES.length) * 100;
+
   return (
     <>
-      {/* Top progress dots */}
-      <div className="pointer-events-none fixed left-1/2 top-4 z-[9990] flex -translate-x-1/2 gap-1.5 rounded-full border border-white/10 bg-black/55 px-3 py-1.5 backdrop-blur-md">
-        {SCENES.map((_, idx) => (
-          <span
-            key={idx}
-            className={cn(
-              "h-1 rounded-full transition-all duration-500",
-              idx === i ? "w-6 bg-white" : idx < i ? "w-1.5 bg-white/70" : "w-1.5 bg-white/25",
-            )}
-          />
-        ))}
+      {/* Top progress bar — clear sense of "how far along we are" */}
+      <div className="pointer-events-none fixed inset-x-0 top-0 h-1 bg-white/5" style={{ zIndex: 9990 }}>
+        <motion.div
+          className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.65)]"
+          initial={false}
+          animate={{ width: `${progressPct}%` }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        />
+      </div>
+
+      {/* "Live demo" badge top-left */}
+      <div
+        className="pointer-events-none fixed left-4 top-4 flex items-center gap-2 rounded-full border border-white/10 bg-black/70 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.18em] text-white backdrop-blur-md"
+        style={{ zIndex: 9990 }}
+      >
+        <span className="relative flex size-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75" />
+          <span className="relative inline-flex size-2 rounded-full bg-blue-500" />
+        </span>
+        Demo en vivo
       </div>
 
       {/* Highlight ring around target */}
@@ -318,7 +329,7 @@ export function Trailer() {
             height: rect.height + 16,
             zIndex: 9991,
             boxShadow:
-              "0 0 0 2px #1D4ED8, 0 0 0 6px rgba(29,78,216,0.25), 0 0 36px 6px rgba(59,130,246,0.45)",
+              "0 0 0 2px #1D4ED8, 0 0 0 6px rgba(29,78,216,0.28), 0 0 40px 8px rgba(59,130,246,0.5)",
           }}
         />
       )}
@@ -354,91 +365,104 @@ export function Trailer() {
         </motion.div>
       )}
 
-      {/* Caption */}
+      {/* Caption — bigger, with inline controls + obvious Next button */}
       <AnimatePresence mode="wait">
         <motion.div
           key={i}
           className={cn(
-            "pointer-events-none fixed mx-auto w-[min(560px,calc(100vw-32px))]",
+            "fixed mx-auto w-[min(700px,calc(100vw-24px))]",
             position === "center"
               ? "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-              : "bottom-6 left-1/2 -translate-x-1/2",
+              : "bottom-4 left-1/2 -translate-x-1/2 sm:bottom-6",
           )}
           style={{ zIndex: 9993 }}
-          initial={{ opacity: 0, y: 16, scale: 0.97 }}
+          initial={{ opacity: 0, y: 22, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -10, scale: 0.97 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="pointer-events-auto rounded-2xl border border-white/10 bg-black/85 p-5 text-white shadow-2xl backdrop-blur-md sm:p-6">
-            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-blue-300">
-              {scene.chapter}
-            </p>
-            <h2 className="mt-1.5 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl">
+          <div className="pointer-events-auto rounded-3xl border border-white/15 bg-gradient-to-br from-black/95 to-black/85 p-5 text-white shadow-2xl backdrop-blur-md sm:p-7">
+            {/* Header row: chapter + step badge */}
+            <div className="flex items-center justify-between gap-3">
+              <p className="inline-flex items-center gap-2 font-mono text-[11px] font-extrabold uppercase tracking-[0.22em] text-blue-300 sm:text-xs">
+                <span className="h-3 w-0.5 rounded-full bg-blue-400" />
+                {scene.chapter}
+              </p>
+              <span className="rounded-full border border-white/20 bg-white/[0.07] px-2.5 py-1 text-[11px] font-extrabold tabular-nums text-white/85">
+                Paso {i + 1} / {SCENES.length}
+              </span>
+            </div>
+
+            <h2 className="mt-3 text-[22px] font-extrabold leading-tight tracking-tight sm:text-[28px]">
               {scene.title}
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-white/85 sm:text-[15px]">{scene.body}</p>
-            {scene.cta && (
-              <a
-                href={scene.cta.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 inline-flex items-center gap-2 rounded-full bg-blue-500 px-5 py-2.5 text-sm font-extrabold text-white transition hover:bg-blue-400"
-              >
-                {scene.cta.label}
-                <span aria-hidden>→</span>
-              </a>
-            )}
+            <p className="mt-2 text-[14px] leading-relaxed text-white/85 sm:text-[15px]">
+              {scene.body}
+            </p>
+
+            {/* Controls row */}
+            <div className="mt-5 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setPaused((p) => !p)}
+                  aria-label={paused ? "Reanudar" : "Pausa"}
+                  className="grid size-10 place-items-center rounded-xl bg-white/8 text-white transition hover:bg-white/15"
+                >
+                  {paused ? <Play className="size-4" /> : <Pause className="size-4" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    elapsedRef.current = 0;
+                    sceneStartRef.current = Date.now();
+                    setI(0);
+                  }}
+                  aria-label="Reiniciar"
+                  className="grid size-10 place-items-center rounded-xl bg-white/8 text-white transition hover:bg-white/15"
+                >
+                  <RotateCcw className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={exit}
+                  aria-label="Salir"
+                  className="grid size-10 place-items-center rounded-xl bg-white/8 text-white transition hover:bg-white/15"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              {scene.cta ? (
+                <a
+                  href={scene.cta.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-accent-400 to-accent-600 px-5 py-3 text-sm font-extrabold text-neutral-950 shadow-lg shadow-accent-600/35 transition hover:from-accent-300 sm:text-base"
+                >
+                  {scene.cta.label}
+                  <ChevronRight className="size-4" />
+                </a>
+              ) : (
+                <motion.button
+                  type="button"
+                  onClick={() => setI((n) => (n + 1) % SCENES.length)}
+                  className="inline-flex items-center gap-2 rounded-full bg-blue-500 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-600/40 transition hover:bg-blue-400 sm:text-base"
+                  animate={{ scale: [1, 1.03, 1] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  Siguiente
+                  <ChevronRight className="size-4" />
+                </motion.button>
+              )}
+            </div>
+
+            <p className="mt-3 text-center text-[11px] text-white/45">
+              Espacio = pausa · → = siguiente · Esc = salir
+            </p>
           </div>
         </motion.div>
       </AnimatePresence>
-
-      {/* Floating controls (bottom right) */}
-      <div
-        className="pointer-events-auto fixed bottom-6 right-6 flex items-center gap-0.5 rounded-full border border-white/10 bg-black/85 px-1.5 py-1 text-white backdrop-blur-md"
-        style={{ zIndex: 9994 }}
-      >
-        <button
-          type="button"
-          onClick={() => setPaused((p) => !p)}
-          aria-label={paused ? "Reanudar" : "Pausa"}
-          className="grid size-9 place-items-center rounded-full transition hover:bg-white/10"
-        >
-          {paused ? <Play className="size-4" /> : <Pause className="size-4" />}
-        </button>
-        <button
-          type="button"
-          onClick={() => setI((n) => (n + 1) % SCENES.length)}
-          aria-label="Siguiente"
-          className="grid size-9 place-items-center rounded-full transition hover:bg-white/10"
-        >
-          <SkipForward className="size-4" />
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            elapsedRef.current = 0;
-            sceneStartRef.current = Date.now();
-            setI(0);
-          }}
-          aria-label="Reiniciar"
-          className="grid size-9 place-items-center rounded-full transition hover:bg-white/10"
-        >
-          <RotateCcw className="size-4" />
-        </button>
-        <span className="mx-1 h-5 w-px bg-white/15" />
-        <button
-          type="button"
-          onClick={exit}
-          aria-label="Salir"
-          className="grid size-9 place-items-center rounded-full transition hover:bg-white/10"
-        >
-          <X className="size-4" />
-        </button>
-        <span className="ml-2 mr-2 font-mono text-[11px] tabular-nums text-white/65">
-          {i + 1}/{SCENES.length}
-        </span>
-      </div>
     </>
   );
 }
