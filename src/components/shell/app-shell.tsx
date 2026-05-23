@@ -32,7 +32,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         </main>
       </div>
       <BottomNav />
-      {!trailerMode && <Assistant />}
+      {/* Assistant FAB stays mounted during trailer so the "Copiloto IA" scene
+          can highlight it. The chat panel itself only opens on click. */}
+      <Assistant />
       {!trailerMode && <Tour />}
       <WelcomeGate />
     </div>

@@ -350,21 +350,8 @@ export function Trailer() {
               }}
             />
           </motion.div>
-        ) : (
-          <motion.div
-            key={`dim-${i}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="pointer-events-none fixed inset-0"
-            style={{
-              zIndex: 9989,
-              background:
-                "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 30%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.85) 100%)",
-            }}
-          />
-        )}
+        ) : null /* Context scenes (no target) → no dim, page shows at full
+                    brightness with just the floating caption on top. */}
       </AnimatePresence>
 
       {/* Top progress bar */}
