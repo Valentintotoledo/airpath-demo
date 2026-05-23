@@ -296,7 +296,8 @@ export function Trailer() {
 
   return (
     <>
-      {/* Dim layer */}
+      {/* Dim layer — when a target is highlighted we use 4 rectangles around it
+          so the target itself stays at full brightness (no opacity over it). */}
       <AnimatePresence>
         {isCenter ? (
           <motion.div
@@ -308,6 +309,47 @@ export function Trailer() {
             className="pointer-events-none fixed inset-0 bg-[#0A0A0B]/95"
             style={{ zIndex: 9989 }}
           />
+        ) : rect ? (
+          <motion.div
+            key={`spot-${i}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+            className="pointer-events-none fixed inset-0"
+            style={{ zIndex: 9989 }}
+          >
+            {/* Top slab */}
+            <div
+              className="absolute bg-black/82"
+              style={{ left: 0, right: 0, top: 0, height: Math.max(rect.top - 14, 0) }}
+            />
+            {/* Bottom slab */}
+            <div
+              className="absolute bg-black/82"
+              style={{ left: 0, right: 0, top: rect.bottom + 14, bottom: 0 }}
+            />
+            {/* Left slab */}
+            <div
+              className="absolute bg-black/82"
+              style={{
+                left: 0,
+                top: Math.max(rect.top - 14, 0),
+                width: Math.max(rect.left - 14, 0),
+                height: rect.height + 28,
+              }}
+            />
+            {/* Right slab */}
+            <div
+              className="absolute bg-black/82"
+              style={{
+                left: rect.right + 14,
+                top: Math.max(rect.top - 14, 0),
+                right: 0,
+                height: rect.height + 28,
+              }}
+            />
+          </motion.div>
         ) : (
           <motion.div
             key={`dim-${i}`}
